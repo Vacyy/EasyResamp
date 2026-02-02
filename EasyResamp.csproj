@@ -8,17 +8,31 @@
 
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>
-
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
 		<Authors>Mikołaj Pałka</Authors>
 		<Product>EasyResamp Pro</Product>
 		<Copyright>Copyright © 2026 Mikołaj Pałka</Copyright>
 		<Description>Profesjonalne narzędzie do zmiany rozmiaru zdjęć.</Description>
 		<Version>1.0.0</Version>
+		<ApplicationIcon>icon\easyresamppro.ico</ApplicationIcon>
+		
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Resource Include="icon\easyresamppro.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Resource>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="icon\easyresamppro.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

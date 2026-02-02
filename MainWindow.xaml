@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="EasyResamp Pro" Height="600" Width="500"
-        Background="#1E1E1E" Foreground="White"
+        Icon="/icon/easyresamppro.ico" Background="#1E1E1E" Foreground="White"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True" Drop="Window_Drop"
         Closing="Window_Closing">

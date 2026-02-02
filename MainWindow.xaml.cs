@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyResamp;
 
-// Zostawiamy tylko podstawowe systemowe usingi, resztę wpisujemy w kodzie "z palca"
-// żeby nie było konfliktów między WPF a WinForms.
 
 namespace EasyResampWPF
 {
@@ -40,7 +38,6 @@ namespace EasyResampWPF
 
             if (settings.UseFixedPath && Directory.Exists(settings.OutputPath))
             {
-                // Najpierw tekst, potem checkbox - naprawia problem otwierania okna przy starcie
                 txtFixedPath.Text = settings.OutputPath;
                 txtFixedPath.Opacity = 1.0;
                 rbFixed.IsChecked = true;
@@ -62,7 +59,6 @@ namespace EasyResampWPF
             settings.Save();
         }
 
-        // --- DRAG & DROP (Pełne ścieżki do WPF) ---
         private void Window_Drop(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -72,15 +68,12 @@ namespace EasyResampWPF
             }
         }
 
-        // --- DODAWANIE PLIKÓW ---
 
-        // Obsługa kliknięcia (RoutedEventArgs - WPF)
         private void BtnAddFiles_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             WybierzPlikiDialog();
         }
 
-        // Obsługa kliknięcia myszą na Border (MouseButtonEventArgs - WPF Input)
         private void BtnAddFiles_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             WybierzPlikiDialog();
@@ -115,10 +108,8 @@ namespace EasyResampWPF
             AktualizujStatus();
         }
 
-        // --- USUWANIE ELEMENTÓW (Pełna ścieżka do Button) ---
         private void BtnRemoveItem_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            // Tutaj był konflikt, teraz wymuszamy Button z WPF
             System.Windows.Controls.Button btn = sender as System.Windows.Controls.Button;
             string sciezka = btn.Tag.ToString();
 
@@ -130,7 +121,7 @@ namespace EasyResampWPF
             }
         }
 
-        // --- OBSŁUGA FOLDERÓW ---
+
         private void FolderOption_Changed(object sender, System.Windows.RoutedEventArgs e)
         {
             if (isInitializing) return;
@@ -152,7 +143,7 @@ namespace EasyResampWPF
 
         private void WybierzFolder()
         {
-            // Tutaj wymuszamy użycie WinForms tylko do Dialogu
+
             using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
             {
                 if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -163,10 +154,9 @@ namespace EasyResampWPF
             }
         }
 
-        // --- START (Tutaj używamy System.Drawing do grafiki) ---
         private async void BtnStart_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            // MessageBox z WPF
+
             if (ListaPlikow.Count == 0) { System.Windows.MessageBox.Show("Lista pusta!"); return; }
 
             if (!int.TryParse(txtWidth.Text, out int w) || !int.TryParse(txtHeight.Text, out int h))
@@ -203,13 +193,13 @@ namespace EasyResampWPF
                 {
                     try
                     {
-                        // Pełne ścieżki do System.Drawing (Grafika, Bitmapa, Obraz)
+
                         using (System.Drawing.Image img = System.Drawing.Image.FromFile(plik.SciezkaPelna))
                         using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h))
                         {
                             using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
                             {
-                                // Pełne ścieżki do enumów jakości
+
                                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                                 g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
@@ -222,7 +212,7 @@ namespace EasyResampWPF
                             bmp.Save(Path.Combine(folderOut, name), System.Drawing.Imaging.ImageFormat.Jpeg);
                         }
                     }
-                    catch { /* Ignorujemy błędy */ }
+                    catch {}
 
                     i++;
                     Dispatcher.Invoke(() =>
