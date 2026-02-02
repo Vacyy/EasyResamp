@@ -1,0 +1,9 @@
+EasyResamp Pro
+Copyright © 2026 Mikołaj Pałka
+
+1. Permission is granted to use this software for personal and commercial purposes free of charge.
+2. The sale, rental, or charging of fees for the distribution of this software is strictly prohibited.
+3. Modification, decompilation (reverse engineering), and removal of authorship information are strictly prohibited.
+4. This software is provided "as is", without warranty of any kind. The author shall not be held liable for any damages arising from the use of this software.
+
+All rights reserved.
