@@ -15,7 +15,8 @@ namespace EasyResamp
         public string OutputPath { get; set; } = "";
         public bool UseFixedPath { get; set; } = false;
 
-       
+        public bool KeepAspectRatio { get; set; } = true;
+
         private static string SettingsFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "EasyResampWPF");

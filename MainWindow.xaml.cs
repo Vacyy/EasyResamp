@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using EasyResamp;
 
-
 namespace EasyResampWPF
 {
     public class PlikObrazu
@@ -36,6 +35,12 @@ namespace EasyResampWPF
             txtWidth.Text = settings.DefaultWidth.ToString();
             txtHeight.Text = settings.DefaultHeight.ToString();
 
+            // 1. Wczytujemy stan checkboxa z ustawień
+            if (cbAspectRatio != null)
+            {
+                cbAspectRatio.IsChecked = settings.KeepAspectRatio;
+            }
+
             if (settings.UseFixedPath && Directory.Exists(settings.OutputPath))
             {
                 txtFixedPath.Text = settings.OutputPath;
@@ -54,6 +59,9 @@ namespace EasyResampWPF
             if (int.TryParse(txtWidth.Text, out int w)) settings.DefaultWidth = w;
             if (int.TryParse(txtHeight.Text, out int h)) settings.DefaultHeight = h;
 
+            // 2. Zapisujemy stan checkboxa przy zamykaniu
+            settings.KeepAspectRatio = cbAspectRatio.IsChecked == true;
+
             settings.UseFixedPath = rbFixed.IsChecked == true;
             settings.OutputPath = txtFixedPath.Text;
             settings.Save();
@@ -67,7 +75,6 @@ namespace EasyResampWPF
                 DodajPliki(pliki);
             }
         }
-
 
         private void BtnAddFiles_Click(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -121,7 +128,6 @@ namespace EasyResampWPF
             }
         }
 
-
         private void FolderOption_Changed(object sender, System.Windows.RoutedEventArgs e)
         {
             if (isInitializing) return;
@@ -143,7 +149,6 @@ namespace EasyResampWPF
 
         private void WybierzFolder()
         {
-
             using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
             {
                 if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -156,11 +161,14 @@ namespace EasyResampWPF
 
         private async void BtnStart_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
             if (ListaPlikow.Count == 0) { System.Windows.MessageBox.Show("Lista pusta!"); return; }
 
-            if (!int.TryParse(txtWidth.Text, out int w) || !int.TryParse(txtHeight.Text, out int h))
+            // Pobieramy limity ("pudełko")
+            if (!int.TryParse(txtWidth.Text, out int boxW) || !int.TryParse(txtHeight.Text, out int boxH))
             { System.Windows.MessageBox.Show("Błędne wymiary!"); return; }
+
+            // 3. Sprawdzamy czy opcja jest włączona
+            bool keepAspect = cbAspectRatio.IsChecked == true;
 
             string folderOut = "";
 
@@ -193,26 +201,42 @@ namespace EasyResampWPF
                 {
                     try
                     {
-
                         using (System.Drawing.Image img = System.Drawing.Image.FromFile(plik.SciezkaPelna))
-                        using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h))
                         {
-                            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
+                            // === 4. LOGIKA PROPORCJI ===
+                            int finalW = boxW;
+                            int finalH = boxH;
+
+                            if (keepAspect)
                             {
+                                // Obliczamy skalę, żeby zmieścić się w pudełku (Fit)
+                                double ratioX = (double)boxW / img.Width;
+                                double ratioY = (double)boxH / img.Height;
+                                double ratio = Math.Min(ratioX, ratioY);
 
-                                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-
-                                g.DrawImage(img, 0, 0, w, h);
+                                finalW = (int)(img.Width * ratio);
+                                finalH = (int)(img.Height * ratio);
                             }
+                            // ===========================
 
-                            string name = $"{Path.GetFileNameWithoutExtension(plik.NazwaPliku)}_{w}x{h}.jpg";
-                            bmp.Save(Path.Combine(folderOut, name), System.Drawing.Imaging.ImageFormat.Jpeg);
+                            using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(finalW, finalH))
+                            {
+                                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
+                                {
+                                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+                                    g.DrawImage(img, 0, 0, finalW, finalH);
+                                }
+
+                                string name = $"{Path.GetFileNameWithoutExtension(plik.NazwaPliku)}_{finalW}x{finalH}.jpg";
+                                bmp.Save(Path.Combine(folderOut, name), System.Drawing.Imaging.ImageFormat.Jpeg);
+                            }
                         }
                     }
-                    catch {}
+                    catch { /* Ignorujemy błędy */ }
 
                     i++;
                     Dispatcher.Invoke(() =>

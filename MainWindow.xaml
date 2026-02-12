@@ -117,15 +117,18 @@
         <StackPanel Grid.Row="0">
             <TextBlock Text="USTAWIENIA" FontWeight="Bold" Foreground="#007ACC" Margin="0,0,0,10"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                <TextBlock Text="Szerokość:" VerticalAlignment="Center" Width="70"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <TextBlock Text="Max Szerokość:" VerticalAlignment="Center" Width="70"/>
                 <TextBox x:Name="txtWidth" Text="1920" Width="60" TextAlignment="Center"/>
                 <TextBlock Text="px" VerticalAlignment="Center" Margin="5,0,15,0" Foreground="Gray"/>
 
-                <TextBlock Text="Wysokość:" VerticalAlignment="Center" Width="70"/>
+                <TextBlock Text="Max Wysokość:" VerticalAlignment="Center" Width="70"/>
                 <TextBox x:Name="txtHeight" Text="1080" Width="60" TextAlignment="Center"/>
                 <TextBlock Text="px" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="Gray"/>
             </StackPanel>
+
+            <CheckBox x:Name="cbAspectRatio" Content="Zachowaj proporcje" 
+                      IsChecked="True" Foreground="White" Margin="0,0,0,15" Cursor="Hand"/>
 
             <StackPanel Margin="0,0,0,5">
                 <RadioButton x:Name="rbAsk" Content="Pytaj o folder za każdym razem" IsChecked="True" 
